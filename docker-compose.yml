@@ -67,16 +67,17 @@ services:
   mysql:
     image: mysql:8.2
     restart: unless-stopped
-    command: ["--datadir=/var/lib/mysql/data"]
+    command: ["--datadir=/var/lib/mysql82"]
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-db_hima}
       MYSQL_USER: ${DB_APP_USER:-hima_app}
       MYSQL_PASSWORD: ${DB_APP_PASSWORD:-hima_app_pass}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-himascore_root}
       MYSQL_ROOT_HOST: "%"
+      MYSQL_INITDB_SKIP_TZINFO: "1"
       TZ: ${TZ:-Asia/Jakarta}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql82
     ports:
       - "127.0.0.1:${DB_FORWARD_PORT:-13306}:3306"
     healthcheck:
@@ -95,4 +96,4 @@ networks:
 
 volumes:
   mysql-data:
-    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v6
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v7
