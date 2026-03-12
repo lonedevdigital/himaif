@@ -65,7 +65,7 @@ services:
       - frontend
 
   mysql:
-    image: mysql:8.4
+    image: mysql:8.2
     restart: unless-stopped
     command: ["--datadir=/var/lib/mysql/data"]
     environment:
@@ -95,4 +95,4 @@ networks:
 
 volumes:
   mysql-data:
-    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v5
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v6
