@@ -2,7 +2,10 @@ name: ${COMPOSE_PROJECT_NAME:-himascore}
 
 services:
   app:
-    image: laravelsail/php82-composer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${COMPOSE_PROJECT_NAME:-himascore}-app:latest
     restart: unless-stopped
     working_dir: /var/www/html
     env_file:
@@ -15,10 +18,7 @@ services:
       DB_USERNAME: ${DB_USERNAME:-root}
       DB_PASSWORD: ${DB_PASSWORD:-${MYSQL_ROOT_PASSWORD:-himascore_root}}
       APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-18080}}
-    command: sh -lc "php artisan serve --host=0.0.0.0 --port=8000"
-    volumes:
-      - ./:/var/www/html
-      - composer-cache:/tmp/composer-cache
+    command: sh -lc "php artisan migrate --force --no-interaction || true; php artisan serve --host=0.0.0.0 --port=8000"
     ports:
       - "127.0.0.1:${APP_PORT:-18080}:8000"
     depends_on:
@@ -28,7 +28,7 @@ services:
       - himascore-net
 
   queue:
-    image: laravelsail/php82-composer:latest
+    image: ${COMPOSE_PROJECT_NAME:-himascore}-app:latest
     restart: unless-stopped
     working_dir: /var/www/html
     env_file:
@@ -42,9 +42,6 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-${MYSQL_ROOT_PASSWORD:-himascore_root}}
       QUEUE_CONNECTION: database
     command: sh -lc "php artisan queue:work --tries=1 --sleep=1 --timeout=90"
-    volumes:
-      - ./:/var/www/html
-      - composer-cache:/tmp/composer-cache
     depends_on:
       mysql:
         condition: service_started
@@ -68,7 +65,7 @@ services:
       - frontend
 
   mysql:
-    image: mysql:8.0
+    image: mysql:8.4
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-db_hima}
@@ -95,5 +92,3 @@ networks:
 volumes:
   mysql-data:
     name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v2
-  composer-cache:
-    name: ${COMPOSE_PROJECT_NAME:-himascore}_composer_cache
