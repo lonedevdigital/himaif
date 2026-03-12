@@ -1,0 +1,101 @@
+name: ${COMPOSE_PROJECT_NAME:-himascore}
+
+services:
+  app:
+    image: laravelsail/php82-composer:latest
+    restart: unless-stopped
+    working_dir: /var/www/html
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-db_hima}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+      APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-18080}}
+    command: sh -lc "php artisan serve --host=0.0.0.0 --port=8000"
+    volumes:
+      - ./:/var/www/html
+      - composer-cache:/tmp/composer-cache
+    ports:
+      - "127.0.0.1:${APP_PORT:-18080}:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - himascore-net
+
+  queue:
+    image: laravelsail/php82-composer:latest
+    restart: unless-stopped
+    working_dir: /var/www/html
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-db_hima}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+      QUEUE_CONNECTION: database
+    command: sh -lc "php artisan queue:work --tries=1 --sleep=1 --timeout=90"
+    volumes:
+      - ./:/var/www/html
+      - composer-cache:/tmp/composer-cache
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - himascore-net
+    profiles:
+      - worker
+
+  vite:
+    image: node:20-alpine
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: sh -lc "npm install && npm run dev -- --host 0.0.0.0 --port=5173"
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "127.0.0.1:${VITE_PORT:-15173}:5173"
+    networks:
+      - himascore-net
+    profiles:
+      - frontend
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-db_hima}
+      MYSQL_ALLOW_EMPTY_PASSWORD: ${MYSQL_ALLOW_EMPTY_PASSWORD:-yes}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-}
+      TZ: ${TZ:-Asia/Jakarta}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:${DB_FORWARD_PORT:-13306}:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - himascore-net
+
+networks:
+  himascore-net:
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_net
+    driver: bridge
+
+volumes:
+  mysql-data:
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data
+  composer-cache:
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_composer_cache
