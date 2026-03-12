@@ -23,7 +23,7 @@ services:
       - "127.0.0.1:${APP_PORT:-18080}:8000"
     depends_on:
       mysql:
-        condition: service_healthy
+        condition: service_started
     networks:
       - himascore-net
 
@@ -47,7 +47,7 @@ services:
       - composer-cache:/tmp/composer-cache
     depends_on:
       mysql:
-        condition: service_healthy
+        condition: service_started
     networks:
       - himascore-net
     profiles:
@@ -79,7 +79,7 @@ services:
     ports:
       - "127.0.0.1:${DB_FORWARD_PORT:-13306}:3306"
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -uroot --password=\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
       interval: 10s
       timeout: 5s
       retries: 20
