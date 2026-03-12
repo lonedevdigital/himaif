@@ -13,7 +13,7 @@ services:
       DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE:-db_hima}
       DB_USERNAME: ${DB_USERNAME:-root}
-      DB_PASSWORD: ${DB_PASSWORD:-}
+      DB_PASSWORD: ${DB_PASSWORD:-${MYSQL_ROOT_PASSWORD:-himascore_root}}
       APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-18080}}
     command: sh -lc "php artisan serve --host=0.0.0.0 --port=8000"
     volumes:
@@ -39,7 +39,7 @@ services:
       DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE:-db_hima}
       DB_USERNAME: ${DB_USERNAME:-root}
-      DB_PASSWORD: ${DB_PASSWORD:-}
+      DB_PASSWORD: ${DB_PASSWORD:-${MYSQL_ROOT_PASSWORD:-himascore_root}}
       QUEUE_CONNECTION: database
     command: sh -lc "php artisan queue:work --tries=1 --sleep=1 --timeout=90"
     volumes:
@@ -68,23 +68,22 @@ services:
       - frontend
 
   mysql:
-    image: mysql:8.4
+    image: mysql:8.0
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-db_hima}
-      MYSQL_ALLOW_EMPTY_PASSWORD: ${MYSQL_ALLOW_EMPTY_PASSWORD:-yes}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-${DB_PASSWORD:-}}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-${DB_PASSWORD:-himascore_root}}
       TZ: ${TZ:-Asia/Jakarta}
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
       - "127.0.0.1:${DB_FORWARD_PORT:-13306}:3306"
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot --password=\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      test: ["CMD-SHELL", "mysqladmin ping -uroot --password=\"$$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 40s
+      retries: 20
+      start_period: 90s
     networks:
       - himascore-net
 
@@ -95,6 +94,6 @@ networks:
 
 volumes:
   mysql-data:
-    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v2
   composer-cache:
     name: ${COMPOSE_PROJECT_NAME:-himascore}_composer_cache
