@@ -67,6 +67,7 @@ services:
   mysql:
     image: mysql:8.4
     restart: unless-stopped
+    command: ["--datadir=/var/lib/mysql/data"]
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-db_hima}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-${DB_PASSWORD:-himascore_root}}
@@ -91,4 +92,4 @@ networks:
 
 volumes:
   mysql-data:
-    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v3
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v4
