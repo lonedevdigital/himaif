@@ -30,6 +30,7 @@ COPY . .
 COPY --from=vendor /app/vendor /var/www/html/vendor
 COPY --from=assets /app/public/build /var/www/html/public/build
 
+RUN chmod +x /var/www/html/docker/start-app.sh /var/www/html/docker/start-queue.sh
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 8000

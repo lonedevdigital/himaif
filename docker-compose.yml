@@ -18,7 +18,7 @@ services:
       DB_USERNAME: ${DB_USERNAME:-root}
       DB_PASSWORD: ${DB_PASSWORD:-${MYSQL_ROOT_PASSWORD:-himascore_root}}
       APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-18080}}
-    command: sh -lc "php artisan migrate --force --no-interaction || true; php artisan serve --host=0.0.0.0 --port=8000"
+    command: ["/var/www/html/docker/start-app.sh"]
     ports:
       - "127.0.0.1:${APP_PORT:-18080}:8000"
     depends_on:
@@ -41,7 +41,7 @@ services:
       DB_USERNAME: ${DB_USERNAME:-root}
       DB_PASSWORD: ${DB_PASSWORD:-${MYSQL_ROOT_PASSWORD:-himascore_root}}
       QUEUE_CONNECTION: database
-    command: sh -lc "php artisan queue:work --tries=1 --sleep=1 --timeout=90"
+    command: ["/var/www/html/docker/start-queue.sh"]
     depends_on:
       mysql:
         condition: service_started
@@ -91,4 +91,4 @@ networks:
 
 volumes:
   mysql-data:
-    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v2
+    name: ${COMPOSE_PROJECT_NAME:-himascore}_mysql_data_v3
