@@ -12,8 +12,8 @@ while [ "$i" -le "$max_tries" ]; do
     $host = getenv("DB_HOST") ?: "mysql";
     $port = getenv("DB_PORT") ?: "3306";
     $db = getenv("DB_DATABASE") ?: "db_hima";
-    $user = getenv("DB_USERNAME") ?: "hima_app";
-    $pass = getenv("DB_PASSWORD") ?: "";
+    $user = getenv("DB_USERNAME") ?: "root";
+    $pass = getenv("DB_PASSWORD") ?: "admin123";
     try {
         new PDO("mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4", $user, $pass, [PDO::ATTR_TIMEOUT => 3]);
         echo "ok";
