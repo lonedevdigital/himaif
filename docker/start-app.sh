@@ -43,5 +43,6 @@ if [ "$i" -gt "$max_tries" ]; then
   exit 1
 fi
 
+php artisan optimize:clear --no-interaction
 php artisan migrate --force --no-interaction
 exec php artisan serve --host=0.0.0.0 --port=8000

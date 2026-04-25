@@ -11,13 +11,22 @@ services:
     env_file:
       - .env
     environment:
+      APP_NAME: ${APP_NAME:-HIMASCORE}
+      APP_ENV: ${APP_ENV:-production}
+      APP_KEY: ${APP_KEY:-base64:zt+iq36yjdKjm57YryC64V/z6EJWQkT1yUlLLnAZqBs=}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-18080}}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stderr}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      SESSION_DRIVER: ${SESSION_DRIVER:-database}
+      CACHE_STORE: ${CACHE_STORE:-database}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE:-db_hima}
       DB_USERNAME: ${DB_APP_USER:-${DB_USERNAME:-root}}
       DB_PASSWORD: ${DB_APP_PASSWORD:-${DB_PASSWORD:-admin123}}
-      APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-18080}}
     command: ["/var/www/html/docker/start-app.sh"]
     ports:
       - "127.0.0.1:${APP_PORT:-18080}:8000"
@@ -34,6 +43,15 @@ services:
     env_file:
       - .env
     environment:
+      APP_NAME: ${APP_NAME:-HIMASCORE}
+      APP_ENV: ${APP_ENV:-production}
+      APP_KEY: ${APP_KEY:-base64:zt+iq36yjdKjm57YryC64V/z6EJWQkT1yUlLLnAZqBs=}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-18080}}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stderr}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      SESSION_DRIVER: ${SESSION_DRIVER:-database}
+      CACHE_STORE: ${CACHE_STORE:-database}
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306
