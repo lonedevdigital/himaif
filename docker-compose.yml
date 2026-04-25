@@ -65,7 +65,7 @@ services:
       - frontend
 
   mysql:
-    image: mysql:8.4
+    image: mysql:8.2
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-db_hima}
@@ -74,7 +74,7 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: "1"
       TZ: ${TZ:-Asia/Jakarta}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql-data-clean-v3:/var/lib/mysql
     ports:
       - "127.0.0.1:${DB_FORWARD_PORT:-13306}:3306"
     healthcheck:
@@ -88,9 +88,7 @@ services:
 
 networks:
   himascore-net:
-    name: ${COMPOSE_PROJECT_NAME:-himascore}_net
     driver: bridge
 
 volumes:
-  mysql-data:
-    name: ${MYSQL_DATA_VOLUME:-${COOLIFY_RESOURCE_UUID:-himascore}_mysql_data_clean_v2}
+  mysql-data-clean-v3:
