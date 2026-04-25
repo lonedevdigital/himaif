@@ -23,7 +23,7 @@ services:
       - "127.0.0.1:${APP_PORT:-18080}:8000"
     depends_on:
       mysql:
-        condition: service_healthy
+        condition: service_started
     networks:
       - himascore-net
 
@@ -44,7 +44,7 @@ services:
     command: ["/var/www/html/docker/start-queue.sh"]
     depends_on:
       mysql:
-        condition: service_healthy
+        condition: service_started
     networks:
       - himascore-net
     profiles:
@@ -93,4 +93,4 @@ networks:
 
 volumes:
   mysql-data:
-    name: ${MYSQL_DATA_VOLUME:-himascore_mysql_data_clean}
+    name: ${MYSQL_DATA_VOLUME:-${COOLIFY_RESOURCE_UUID:-himascore}_mysql_data_clean_v2}
