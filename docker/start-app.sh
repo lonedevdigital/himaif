@@ -8,6 +8,14 @@ i=1
 echo "Checking Laravel app files..."
 test -f /var/www/html/artisan
 
+echo "Preparing Laravel storage directories..."
+mkdir -p \
+  storage/framework/cache/data \
+  storage/framework/sessions \
+  storage/framework/views \
+  storage/logs \
+  bootstrap/cache
+
 echo "Waiting for MySQL at ${DB_HOST:-mysql}:${DB_PORT:-3306}..."
 while [ "$i" -le "$max_tries" ]; do
   if err="$(

@@ -30,8 +30,14 @@ COPY . .
 COPY --from=vendor /app/vendor /var/www/html/vendor
 COPY --from=assets /app/public/build /var/www/html/public/build
 
-RUN chmod +x /var/www/html/docker/start-app.sh /var/www/html/docker/start-queue.sh
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN mkdir -p \
+    /var/www/html/storage/framework/cache/data \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/logs \
+    /var/www/html/bootstrap/cache \
+    && chmod +x /var/www/html/docker/start-app.sh /var/www/html/docker/start-queue.sh \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 8000
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

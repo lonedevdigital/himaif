@@ -5,6 +5,14 @@ max_tries="${DB_WAIT_TRIES:-120}"
 sleep_seconds="${DB_WAIT_SLEEP:-2}"
 i=1
 
+echo "Preparing Laravel storage directories for queue..."
+mkdir -p \
+  storage/framework/cache/data \
+  storage/framework/sessions \
+  storage/framework/views \
+  storage/logs \
+  bootstrap/cache
+
 echo "Waiting for MySQL at ${DB_HOST:-mysql}:${DB_PORT:-3306} for queue..."
 while [ "$i" -le "$max_tries" ]; do
   if err="$(
