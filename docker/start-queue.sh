@@ -7,7 +7,7 @@ i=1
 
 echo "Waiting for MySQL at ${DB_HOST:-mysql}:${DB_PORT:-3306} for queue..."
 while [ "$i" -le "$max_tries" ]; do
-  err="$(
+  if err="$(
   php -r '
     $host = getenv("DB_HOST") ?: "mysql";
     $port = getenv("DB_PORT") ?: "3306";
@@ -23,11 +23,11 @@ while [ "$i" -le "$max_tries" ]; do
         exit(1);
     }
   ' 2>&1
-  )"
-
-  if [ "$err" = "ok" ]; then
-    echo "MySQL is ready for queue."
-    break
+  )"; then
+    if [ "$err" = "ok" ]; then
+      echo "MySQL is ready for queue."
+      break
+    fi
   fi
 
   echo "MySQL not ready for queue (${i}/${max_tries}): ${err}"
